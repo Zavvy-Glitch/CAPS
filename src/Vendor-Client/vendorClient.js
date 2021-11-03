@@ -1,16 +1,15 @@
 "use strict";
 
+// const parcel = require('../Hub/events.js');
 const client = require("socket.io-client");
 const logDelivery = require("./logDelivery.js");
 const faker = require("faker");
+
+//////////////////////////////////////////
+
 const messageClient = client("http://localhost:3030/messages");
 
-//////////////////////////////////////////////////
-
-messageClient.on("connection", (socket) => {
- socket.emit("delivered", logDelivery);
-} 
-)
+messageClient.on("delivered", logDelivery);
 
 function pickup() {
   const store = faker.fake("{{company.companyName}}");
@@ -18,13 +17,14 @@ function pickup() {
   const randomName = faker.name.findName();
   const randomAddress = faker.fake(
     "{{address.streetAddress}}, {{address.cityName}}, {{address.state}} {{address.zipCodeByState}}"
-    );
-    let payload = {
-      store: store,
-      orderId: id,
-      customer: randomName,
-      address: randomAddress,
-     };
-     messageClient.emit("pickup", payload);
-   }
-   console.log(pickup());
+  );
+  let payload = {
+    store: store,
+    orderId: id,
+    customer: randomName,
+    address: randomAddress,
+  };
+  messageClient.emit("pickup", payload);
+}
+
+console.log(pickup());
